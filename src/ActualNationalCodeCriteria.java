@@ -1,14 +1,14 @@
 import java.util.regex.Pattern;
 
 public class ActualNationalCodeCriteria {
-    public String isLegalNationalCodeOk(String nationalCode, boolean isLegal) {
+    public String isNationalCodeOk(String nationalCode, boolean isLegalNationalCode) {
 
         char[] nationalCodeArray;
         int numberInLocationSum = 0;
         int remainder = 0;
         int controlDigit = 0;
 
-        if (isLegal) {
+        if (isLegalNationalCode) {
             //Step1: check that legal national code is 11 digit
             Pattern pattern = Pattern.compile("^[0-9]{11}$");
             boolean criteria = pattern.matcher(nationalCode).matches();
@@ -16,11 +16,12 @@ public class ActualNationalCodeCriteria {
                 return "The legal national code( " + nationalCode + " ) is not OK!";
             //Step1 end.
 
+            //Step2: check the structure of national code
             nationalCodeArray = nationalCode.toCharArray();
             int[] coefficientArray = {29, 27, 23, 19, 17, 29, 27, 23, 19, 17};
-            int a = Integer.parseInt(String.valueOf(nationalCodeArray[9])) + 2;
+            int position10InArrayPlus2 = Integer.parseInt(String.valueOf(nationalCodeArray[9])) + 2;
             for(int i = 0; i < 10; i++){
-                numberInLocationSum = numberInLocationSum + (Integer.parseInt(String.valueOf(nationalCodeArray[i])) + a) * coefficientArray[i];
+                numberInLocationSum = numberInLocationSum + (Integer.parseInt(String.valueOf(nationalCodeArray[i])) + position10InArrayPlus2) * coefficientArray[i];
             }
 
             remainder = numberInLocationSum % 11;
@@ -34,6 +35,7 @@ public class ActualNationalCodeCriteria {
                 if (remainder == controlDigit)
                     return "legal national code (" + nationalCode + " ) is OK!";
             }
+            //Step2 end
 
             return "The legal national code( " + nationalCode + " ) is not OK!";
         } else {
@@ -53,7 +55,7 @@ public class ActualNationalCodeCriteria {
             }
             //
             // a     b     c     d     e     f     g     h     i     j
-            // *     *
+            //
             // 10    9     8     7     6     5     4     3     2
             //
             // numberInLocationSum = (a * 10) + (b * 9) + (b * 8) + ... + (i * 2)
